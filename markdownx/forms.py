@@ -107,7 +107,7 @@ class ImageForm(forms.Form):
 
         if commit:
             default_storage.save(full_path, image)
-            return default_storage.url(full_path)
+            return '{% static "' + full_path + '" %}'
 
         # If `commit is False`, return the path and in-memory image.
         image_data = namedtuple('image_data', ['path', 'image'])

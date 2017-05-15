@@ -1,12 +1,16 @@
+import re
 from markdown import markdown
 
 from PIL import Image
+from django.core.files.storage import default_storage
 
 from .settings import (
     MARKDOWNX_MARKDOWN_EXTENSIONS,
     MARKDOWNX_MARKDOWN_EXTENSION_CONFIGS
 )
 
+def static_url(full_path):
+    return default_storage.url(full_path.group(1))
 
 def markdownify(content):
     """
@@ -17,6 +21,14 @@ def markdownify(content):
     :return: HTML encoded text.
     :rtype: str
     """
+    # replace all occurences of {% static "filename" %} with
+    # url from the storage engine
+
+    regex = '{% static \"(.*?)\" %}'
+    
+    content = re.sub(regex, static_url, content)
+    
+
     md = markdown(
         text=content,
         extensions=MARKDOWNX_MARKDOWN_EXTENSIONS,
